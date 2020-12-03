@@ -9,7 +9,7 @@ def plot_cov_ellipse(cov, pos, nstd=2, ax=None, **kwargs):
     angle = np.degrees(np.arctan2(vecs[0, 1], vecs[0, 0]))
 
     width, height = 2 * nstd * np.sqrt(vals)
-    ellip = Ellipse(xy=pos, width=width, height=height, angle=angle, lw=1, **kwargs)
+    ellip = Ellipse(xy=pos, width=width, height=height, angle=angle, lw=0.5, **kwargs)
     return ellip
 
 
@@ -29,7 +29,8 @@ def plot_observation_links(observation_list, filters):
             obs_centroid = observation_list[f['last_observation']]['centroid']
             diff = [f['x'][:2][i] - obs_centroid[i] for i in (0, 1)]
             arrows.append(
-                Arrow(x=obs_centroid[0], y=obs_centroid[1], dx=diff[0], dy=diff[1], edgecolor='b'))
+                Arrow(x=obs_centroid[0], y=obs_centroid[1], dx=diff[0], dy=diff[1],
+                      edgecolor='b', facecolor='none', lw=0.5))
     return PatchCollection(arrows, match_original=True)
 
 
@@ -72,7 +73,7 @@ def plot_debug_data(debug_data, n, ax=None):
     # velocity arrows
     arrow_keys = ['x', 'y', 'dx', 'dy']
     velocity_arrow_collection = PatchCollection([
-        Arrow(**dict(zip(arrow_keys, f['x'])), edgecolor=get_color(f), facecolor='none')
+        Arrow(**dict(zip(arrow_keys, f['x'])), edgecolor=get_color(f), facecolor='none', lw=0.5)
         for f in filters.values()
     ], match_original=True)
     ax.add_collection(velocity_arrow_collection)
