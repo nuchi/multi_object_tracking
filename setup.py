@@ -4,6 +4,7 @@ NAME = 'multi_object_tracking'
 
 install_requires = [
     'filterpy>=1.4.5',
+    'importlib-resources; python_version < "3.7"'
     'matplotlib>=3.2.0',
     'numpy>=1.16',
     'opencv-python>=4.0.0',
