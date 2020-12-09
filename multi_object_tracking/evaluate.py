@@ -13,9 +13,9 @@ from . import params
 from .track import track
 
 OFFSETS = {
-    1: np.array([0,0]),
-    2: np.array([640,0]),
-    3: np.array([0,512]),
+    1: np.array([0, 0]),
+    2: np.array([640, 0]),
+    3: np.array([0, 512]),
     4: np.array([640, 512]),
 }
 
@@ -65,8 +65,6 @@ def compute_stats(predictions, labels):
 
     matches = np.count_nonzero(best_matches >= 0)
 
-    recall = matches / len(labels)
-    precision = matches / len(predictions)
     fp = len(predictions) - matches
     fn = len(labels) - matches
     return dict(

@@ -47,8 +47,8 @@ def track(filename, debug=False, start=0, end=None):
         stale_filters = []
         for f in filters:
             valid_filters.append(f) \
-            if f.last_observed < params.TRACK_STALE_FILTER_CUTOFF \
-            else stale_filters.append(f)
+                if f.last_observed < params.TRACK_STALE_FILTER_CUTOFF \
+                else stale_filters.append(f)
         filters = valid_filters
 
         # Add debug information
