@@ -118,7 +118,6 @@ def evaluate_video(filename, labels_dir, use_filters, start, end):
             continue
         predictions = [
                 f['x'][:2] for f in debug_data[i - start]['filters'].values()
-                if not f['is_duplicate'] and f['last_observed'] < 3
             ] \
             if use_filters \
             else [o['centroid'] for o in debug_data[i - start]['observations']]
@@ -210,6 +209,9 @@ if __name__ == '__main__':
         '-e', '--end', default=None, type=int,
         help='Frame number at which to stop. Omit to auto-detect based on labels. '
              'Use -1 to go until the end of the video.')
+    parser.add_argument(
+        '--params', help='Override the default model parameters by passing a file.')
     args, _ = parser.parse_known_args()
-
-    sys.exit(evaluate_all(**vars(args)))
+    args = vars(args)
+    params.init(args.pop('params'))
+    sys.exit(evaluate_all(**args))
