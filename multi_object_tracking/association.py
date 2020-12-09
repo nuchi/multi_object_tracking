@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.spatial
 
-CANDIDATE_PIXEL_RADIUS = 60
+from . import params
 
 
 def associate(filters, observations):
@@ -25,7 +25,8 @@ def associate(filters, observations):
         np.array([flt.mean() for flt in filters]))
     observation_tree = scipy.spatial.cKDTree(
         np.array([obs.centroid for obs in observations]))
-    candidates = filter_tree.query_ball_tree(observation_tree, CANDIDATE_PIXEL_RADIUS)
+    candidates = filter_tree.query_ball_tree(
+        observation_tree, params.ASSOC_CANDIDATE_PIXEL_RADIUS)
 
     for i, flt in enumerate(filters):
         obs_candidates = [(j, observations[j]) for j in candidates[i]]
@@ -47,7 +48,7 @@ def find_best_observation(flt, observations):
 
     distances = [(o, dist(o)) for o in observations]
     distances = [(o, d) for o, d in distances
-                 if d < 10]
+                 if d < params.ASSOC_LOG_LKL_THRESHOLD]
 
     if not distances:
         return None

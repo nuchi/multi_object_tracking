@@ -3,6 +3,8 @@ from matplotlib.patches import Ellipse, Arrow
 from matplotlib.collections import PatchCollection
 import numpy as np
 
+from . import params
+
 
 def plot_cov_ellipse(cov, pos, nstd=2, ax=None, **kwargs):
     vals, vecs = np.linalg.eigh(cov)
@@ -37,7 +39,7 @@ def plot_observation_links(observation_list, filters):
 def get_color(f):
     if f['is_duplicate']:
         return 'orange'
-    if f['last_observed'] == 3:
+    if f['last_observed'] >= params.TRACK_STALE_FILTER_CUTOFF:
         return 'red'
     if f['age'] == 0:
         return 'lightgreen'

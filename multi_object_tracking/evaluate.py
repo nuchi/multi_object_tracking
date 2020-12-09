@@ -9,9 +9,9 @@ import numpy as np
 import scipy.sparse
 import scipy.spatial
 
+from . import params
 from .track import track
 
-THRESHOLD = 4  # pixels
 OFFSETS = {
     1: np.array([0,0]),
     2: np.array([640,0]),
@@ -45,11 +45,12 @@ def load_labels(basename, frame_num):
     return labels, found
 
 
-def compute_stats(predictions, labels, threshold=THRESHOLD):
+def compute_stats(predictions, labels):
     predictions_tree = scipy.spatial.cKDTree(predictions)
     labels_tree = scipy.spatial.cKDTree(labels)
 
-    l_to_ps = labels_tree.query_ball_tree(predictions_tree, threshold)
+    l_to_ps = labels_tree.query_ball_tree(
+        predictions_tree, params.EVAL_MATCH_PIXEL_THRESHOLD)
     indices = []
     indptr = [0]
     for ps in l_to_ps:

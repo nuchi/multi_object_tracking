@@ -4,6 +4,8 @@ import filterpy.common
 from filterpy.stats import logpdf
 import numpy as np
 
+from . import params
+
 
 def update_covariance(observation):
     return 0.5 * observation.covariance + np.eye(2)
@@ -21,7 +23,7 @@ class KalmanConstVelFilter:
         idx, observation = idx_observation
         kf.x[:2] = np.reshape(observation.centroid, (2, 1))
         kf.x[2:] = np.array([[0.], [0.]])
-        kf.P = np.diag([1.0, 1.0, 10., 10.])
+        kf.P = np.diag(params.KF_INITIAL_DIAG_COV)
         kf.P[:2, :2] = update_covariance(observation)
         kf.R = np.diag([1.0, 1.0])
         kf.Q = filterpy.common.discretization.Q_discrete_white_noise(

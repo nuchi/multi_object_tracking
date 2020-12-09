@@ -5,6 +5,8 @@ import os
 
 import tqdm
 
+from . import params
+
 EXTS = ('mp4', 'avi', 'mov', 'mpeg', 'flv', 'wmv')
 
 
@@ -24,8 +26,11 @@ parser.add_argument(
 parser.add_argument(
     '-e', '--end', default=None, type=int,
     help='The frame number at which to stop. (Stop at the end by default.)')
+parser.add_argument(
+    '--params', help='Override the default model parameters by passing a file.')
 args, _ = parser.parse_known_args()
 debug = args.debug_out is not None
+params.init(args.params)
 
 
 # Move expensive imports below argument parsing so that `--help` still runs quickly

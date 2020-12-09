@@ -2,17 +2,16 @@ import itertools
 
 import tqdm
 
-from .update import update, make_new_filters, deduplicate
-from .association import associate
-from .observation import observations_from_frame
-from .preprocess import foreground, stream_video
+from . import update
+from . import association
+from . import observation
+from . import params
+from . import preprocess
 
 
 def track(filename, debug=False, start=0, end=None):
-    frames = foreground(
-        itertools.islice(stream_video(filename), start, end),
-        20,
-    )
+    frames = preprocess.foreground(
+        itertools.islice(preprocess.stream_video(filename), start, end))
 
     filters = []
     filter_counts = []
@@ -22,23 +21,23 @@ def track(filename, debug=False, start=0, end=None):
 
     for frame in tqdm.tqdm(frames):
         # Generate observations
-        observations = observations_from_frame(frame)
+        observations = observation.observations_from_frame(frame)
 
         # Associate observations to existing filters
         for f in filters:
             f.predict()
-        associations, unassociated_observations = associate(filters, observations)
+        associations, unassociated_observations = association.associate(filters, observations)
 
         # Update filters with their corresponding observations
-        update(associations)
+        update.update(associations)
 
         # Make new filters for unassociated observations
-        new_filters = make_new_filters(unassociated_observations)
+        new_filters = update.make_new_filters(unassociated_observations)
         filters.extend(new_filters)
 
         # If we have multiple filters tracking the same underlying object, mark
         # the redundant ones as being duplicates.
-        filters, duplicates = deduplicate(filters)
+        filters, duplicates = update.deduplicate(filters)
         # Mark duplicates for debugging purposes
         for f in duplicates:
             f.is_duplicate = True
@@ -47,7 +46,9 @@ def track(filename, debug=False, start=0, end=None):
         valid_filters = []
         stale_filters = []
         for f in filters:
-            valid_filters.append(f) if f.last_observed < 3 else stale_filters.append(f)
+            valid_filters.append(f) \
+            if f.last_observed < params.TRACK_STALE_FILTER_CUTOFF \
+            else stale_filters.append(f)
         filters = valid_filters
 
         # Add debug information

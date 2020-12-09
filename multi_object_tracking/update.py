@@ -4,6 +4,7 @@ import numpy as np
 import scipy.spatial
 
 from .kalman_filter import KalmanConstVelFilter
+from . import params
 
 
 def update(associations):
@@ -25,7 +26,7 @@ def deduplicate(filters):
 
     filter_tree = scipy.spatial.cKDTree(
         np.array([f._kf.x.reshape((4,)) for f in filters]))
-    nearby_pairs = filter_tree.query_pairs(2.0)
+    nearby_pairs = filter_tree.query_pairs(params.UPD_DUP_FILTER_SQ_DIST_THRESHOLD)
     components = connected_components(nearby_pairs)
     for component in components:
         best = min(

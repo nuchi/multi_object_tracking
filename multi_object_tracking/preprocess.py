@@ -5,6 +5,8 @@ import os
 import cv2 as cv
 import numpy as np
 
+from . import params
+
 
 def stream_video(filename):
     """
@@ -26,7 +28,7 @@ def stream_video(filename):
             break
 
 
-def foreground(stream, buflen):
+def foreground(stream):
     """
     Takes a stream of greyscale images and yields a foreground segmentation.
     It assumes that the foreground consists of dark moving objects on a static
@@ -65,6 +67,7 @@ def foreground(stream, buflen):
         for frame in right_window:
             yield right_max
 
+    buflen = params.PP_NUM_FRAMES_IN_MAX_BUFFER
     s1, s2, s3 = itertools.tee(stream, 3)
     for left_max, right_max, frame in zip(left_window_max(s1, buflen),
                                           right_window_max(s2, buflen),
