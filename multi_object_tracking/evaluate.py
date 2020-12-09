@@ -30,7 +30,9 @@ def load_labels(basename, frame_num):
     frame_num = frame_num + 1  # frame number in file name is 1-indexed
 
     for i in (1, 2, 3, 4):
-        filename = f'{basename}_{frame_num:04d}_{i}_labelbasic.json'
+        filename = f'{basename}_{frame_num:04d}_{i}_label.json'
+        if not os.path.isfile(filename):
+            filename = f'{basename}_{frame_num:04d}_{i}_labelbasic.json'
         try:
             with open(filename) as f:
                 data = json.load(f)
@@ -81,16 +83,19 @@ def evaluate_video(filename, labels_dir, use_filters, start, end):
     )
 
     if start is None or end is None:
-        label_names = glob.glob(f'{labels_base}_*_labelbasic.json')
+        label_names = glob.glob(f'{labels_base}_*_label*.json')
         pat = re.compile('^{prefix}_([0-9]*)_'.format(prefix=re.escape(labels_base)))
         frame_nums = set(
             int(re.match(pat, name).groups()[0], base=10) - 1
             for name in label_names
         )
+        if len(frame_nums) == 0:
+            raise BadVideoException('No labels found')
+
         if start is None:
-            start = max(0, min(frame_nums) - 20)
+            start = max(0, min(frame_nums) - params.PP_NUM_FRAMES_IN_MAX_BUFFER)
         if end is None:
-            end = max(frame_nums) + 20
+            end = max(frame_nums) + params.PP_NUM_FRAMES_IN_MAX_BUFFER
 
         print(f'Auto-detected beginning and end of labels; using start {start}, end {end}')
 

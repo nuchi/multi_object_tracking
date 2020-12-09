@@ -53,7 +53,7 @@ def plot_debug_data(debug_data, n, ax=None):
         coll.remove()
 
     observations = debug_data[n]['observations']
-    filters = dict(debug_data[n]['filters'], **debug_data[n]['invalid_filters'])
+    filters = {**debug_data[n]['filters'], **debug_data[n]['invalid_filters']}
 
     # Observations
     obs_collection = plot_covariances(
