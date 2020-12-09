@@ -63,9 +63,6 @@ class KalmanConstVelFilter:
         S = np.dot(kf.H, np.dot(kf.P, kf.H.T)) + observation.covariance
         return -logpdf(x=residual, cov=S)
 
-    def is_valid(self):
-        return self.last_observed < 3 and not self.is_duplicate
-
     def dump(self):
         return {
             'age': self.age,

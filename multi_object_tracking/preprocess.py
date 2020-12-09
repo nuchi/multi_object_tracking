@@ -1,5 +1,6 @@
 from collections import deque
 import itertools
+import os
 
 import cv2 as cv
 import numpy as np
@@ -10,12 +11,19 @@ def stream_video(filename):
     Frames are rgb but with identical values; just read as greyscale.
     Takes a path and returns a generator consisting of greyscale frames.
     """
+    if not os.path.isfile(filename):
+        raise FileNotFoundError(f"Can't find file {filename}")
+
     vc = cv.VideoCapture(filename)
+    success, frame = vc.read()
+    if not success:
+        raise ValueError(f'No frames found in {filename}, is it a valid video?')
+
     while True:
+        yield frame[:, :, 0]
         success, frame = vc.read()
         if not success:
             break
-        yield frame[:, :, 0]
 
 
 def foreground(stream, buflen):

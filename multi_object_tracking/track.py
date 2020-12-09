@@ -37,12 +37,20 @@ def track(filename, debug=False, start=0, end=None):
         filters.extend(new_filters)
 
         # If we have multiple filters tracking the same underlying object, mark
-        # the redundant ones as being duplicates. This just sets a flag; we'll
-        # actually get rid of them during the is_valid check after we record
-        # debug info.
-        deduplicate(filters)
+        # the redundant ones as being duplicates.
+        filters, duplicates = deduplicate(filters)
+        # Mark duplicates for debugging purposes
+        for f in duplicates:
+            f.is_duplicate = True
 
-        # Add debug information before pruning invalid filters
+        # Remove stale filters
+        valid_filters = []
+        stale_filters = []
+        for f in filters:
+            valid_filters.append(f) if f.last_observed < 3 else stale_filters.append(f)
+        filters = valid_filters
+
+        # Add debug information
         if debug:
             debug_data.append({
                 'observations': [
@@ -55,10 +63,13 @@ def track(filename, debug=False, start=0, end=None):
                 'filters': {
                     f.id: f.dump()
                     for f in filters
+                },
+                'invalid_filters': {
+                    f.id: f.dump()
+                    for f in duplicates + stale_filters
                 }
             })
 
-        filters = [f for f in filters if f.is_valid()]
         filter_counts.append(len(filters))
 
     return filter_counts, debug_data

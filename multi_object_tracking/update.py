@@ -16,6 +16,13 @@ def make_new_filters(unassociated_observations):
 
 
 def deduplicate(filters):
+    if len(filters) == 0:
+        return filters, []
+
+    valid_filter_indices = set(range(len(filters)))
+
+    invalid_filters = []
+
     filter_tree = scipy.spatial.cKDTree(
         np.array([f._kf.x.reshape((4,)) for f in filters]))
     nearby_pairs = filter_tree.query_pairs(2.0)
@@ -25,9 +32,13 @@ def deduplicate(filters):
             component,
             key=lambda idx: np.linalg.det(filters[idx]._kf.P))
         for idx in component:
-            if idx == best:
-                continue
-            filters[idx].is_duplicate = True
+            if idx != best:
+                invalid_filters.append(filters[idx])
+                valid_filter_indices.discard(idx)
+
+    valid_filters = [filters[idx] for idx in valid_filter_indices]
+
+    return valid_filters, invalid_filters
 
 
 def connected_components(list_of_pairs):
