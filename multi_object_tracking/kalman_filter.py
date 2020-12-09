@@ -28,11 +28,6 @@ class KalmanConstVelFilter:
         kf.R = np.diag([1.0, 1.0])
         kf.Q = filterpy.common.discretization.Q_discrete_white_noise(
             dim=2, block_size=2, order_by_dim=False, var=3.)
-
-        # marked read-only but we need it sooner
-        kf.S = np.dot(kf.H, np.dot(kf.P, kf.H.T)) + kf.R
-        kf.SI = np.linalg.inv(kf.S)
-
         self._kf = kf
         self.age = 0
         self.last_observed = 0
@@ -41,11 +36,7 @@ class KalmanConstVelFilter:
         self.id = next(KalmanConstVelFilter.id_iter)
 
     def predict(self):
-        kf = self._kf
-        kf.predict()
-        # marked read-only but we need it sooner
-        kf.S = np.dot(kf.H, np.dot(kf.P, kf.H.T))
-        kf.SI = np.linalg.inv(kf.S)
+        self._kf.predict()
         self.last_observed += 1
         self.age += 1
 

@@ -18,7 +18,7 @@ def observations_from_frame(frame):
     covariances = [np.cov(component, rowvar=False) for component in components]
 
     observations = [
-        Observation(centroids[i + 1][::1], covariance)
+        Observation(centroids[i + 1], covariance)
         for i, (component, covariance) in enumerate(zip(components, covariances))
     ]
     observations = [
