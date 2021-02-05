@@ -8,7 +8,7 @@ I've made efforts to make the code modular and readable, so hopefully someone fi
 
 ## How to use
 
-To use this to count objects in a video:
+Please note that Python 3 is required. To use this to count objects in a video:
 ```bash
 git clone git@github.com:nuchi/multi_object_tracking.git
 cd multi_object_tracking
