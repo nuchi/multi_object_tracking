@@ -1,10 +1,18 @@
-# Multi-object tracking
+# About
+
+This is a project to count and detect _Daphnia_ (water fleas) automatically from grayscale videos. It is particularly tuned towards videos I was using (which are not mine, so I can't make them available), and so it will not generalize to other videos without modification. It looks for roughly constant velocity dark blotches on a lighter stationary background. It can tolerate gradual overall changes in background lighting, but will have trouble with rapid flickering.
+
+It works by implementing a multi-object tracking algorithm. In short, frame-by-frame detections, then association of those detections to existing objects and track merging/creation/deletion, and then Kalman filtering with linear dynamics).
+
+I've made efforts to make the code modular and readable, so hopefully someone finds it useful.
+
+## How to use
 
 To use this to count objects in a video:
 ```bash
 git clone git@github.com:nuchi/multi_object_tracking.git
 cd multi_object_tracking
-pip install -e .  # installs in editable mode
+python -m pip install -e .  # install prerequisites, then install the project in editable mode
 mkdir output  # create a directory for debug output
 python -m multi_object_tracking \
   --path $PATH_TO_VIDEOS_DIRECTORY \
@@ -31,7 +39,7 @@ where `list_of_videos.txt` is a file that looks like:
 <path_to_video_2>,<path_to_directory_with_labels_for_video_2>
 ...
 ```
-The labels for a video `my-video.avi` should have names like `my-video_0123_1_label.json` or `my-video_0123_1_labelbasic.json`.
+The labels for a video `my-video.avi` should have names like `my-video_0123_1_label.json` or `my-video_0123_1_labelbasic.json`. I haven't documented the label format, because I was working with existing files that were handed to me. If you're finding this project, it might be best to rewrite the evaluation section for your own purposes rather than try to adapt mine.
 
 ## How it works
 
